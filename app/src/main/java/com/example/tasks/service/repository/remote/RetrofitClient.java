@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
 
-    private static String BASE_URL = "http://devmasterteam.com/CursoAndroidAPI";
+    private static String BASE_URL = "http://devmasterteam.com/CursoAndroidAPI/";
     private static Retrofit retrofit;
 
     private RetrofitClient() {
