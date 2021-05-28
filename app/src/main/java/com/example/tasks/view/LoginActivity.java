@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +36,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Cria observadores
         this.loadObservers();
+
+        this.verifyUserLogged();
     }
 
     @Override
@@ -58,13 +61,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         this.mLoginViewModel.login.observe(this, new Observer<Feedback>() {
             @Override
             public void onChanged(Feedback feedback) {
-                if (feedback.isSuccess()){
-                    Toast.makeText(getApplicationContext(),"Sucesso", Toast.LENGTH_SHORT).show();
+                if (feedback.isSuccess()) {
+                    Toast.makeText(getApplicationContext(), "Sucesso", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getApplicationContext(),feedback.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), feedback.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        this.mLoginViewModel.userLogged.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean logged) {
+                if (logged) {
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
+    }
+
+    private void verifyUserLogged() {
+        this.mLoginViewModel.verifyUserLogged();
     }
 
 

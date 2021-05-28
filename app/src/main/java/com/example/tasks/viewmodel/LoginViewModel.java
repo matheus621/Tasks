@@ -19,6 +19,9 @@ public class LoginViewModel extends AndroidViewModel {
     private MutableLiveData<Feedback> mLogin = new MutableLiveData<>();
     public LiveData<Feedback> login = this.mLogin;
 
+    private MutableLiveData<Boolean> mUserLogged = new MutableLiveData<>();
+    public LiveData<Boolean> userLogged = this.mUserLogged;
+
     public LoginViewModel(@NonNull Application application) {
         super(application);
         this.mPersonRepository = new PersonRepository(application);
@@ -39,6 +42,11 @@ public class LoginViewModel extends AndroidViewModel {
                 mLogin.setValue(new Feedback(message));
             }
         });
+    }
+
+    public void verifyUserLogged() {
+        PersonModel model = this.mPersonRepository.getUserData();
+        this.mUserLogged.setValue((!"".equals(model.getName())));
     }
 
 }
