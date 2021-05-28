@@ -20,6 +20,7 @@ public interface PersonService {
     @FormUrlEncoded
     @POST("Authentication/Login")
     Call<PersonModel> login(
-            @Field("name") String name,
-            @Field("email") String email);
+            @Field("email") String email,
+            @Field("password") String password);
+
 }

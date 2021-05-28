@@ -1,14 +1,17 @@
 package com.example.tasks.view;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.tasks.R;
+import com.example.tasks.service.listener.Feedback;
 import com.example.tasks.viewmodel.LoginViewModel;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
@@ -52,6 +55,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void loadObservers() {
+        this.mLoginViewModel.login.observe(this, new Observer<Feedback>() {
+            @Override
+            public void onChanged(Feedback feedback) {
+                if (feedback.isSuccess()){
+                    Toast.makeText(getApplicationContext(),"Sucesso", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(),feedback.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
 
