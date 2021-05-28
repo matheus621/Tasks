@@ -24,10 +24,13 @@ public class LoginViewModel extends AndroidViewModel {
         this.mPersonRepository = new PersonRepository(application);
     }
 
-    public void login(String email, String password){
+    public void login(String email, String password) {
         this.mPersonRepository.login(email, password, new APIListener<PersonModel>() {
             @Override
             public void onSuccess(PersonModel result) {
+
+                mPersonRepository.saveUserData(result);
+
                 mLogin.setValue(new Feedback());
             }
 
