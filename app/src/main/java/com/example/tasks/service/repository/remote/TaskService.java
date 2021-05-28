@@ -1,6 +1,5 @@
 package com.example.tasks.service.repository.remote;
 
-import com.example.tasks.service.model.PersonModel;
 import com.example.tasks.service.model.TaskModel;
 
 import java.util.List;

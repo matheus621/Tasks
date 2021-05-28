@@ -9,39 +9,38 @@ import com.example.tasks.service.model.PersonModel;
 import com.example.tasks.service.repository.local.SecurityPreferences;
 import com.example.tasks.service.repository.remote.PersonService;
 import com.example.tasks.service.repository.remote.RetrofitClient;
-import com.google.gson.Gson;
-
-import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PersonRepository {
+public class PersonRepository extends BaseRepository{
 
     private PersonService mPersonService;
-    private Context mContext;
     private SecurityPreferences mSecurityPreferences;
 
     public PersonRepository(Context context) {
+        super(context);
         this.mPersonService = RetrofitClient.createService(PersonService.class);
         this.mContext = context;
         this.mSecurityPreferences = new SecurityPreferences(context);
     }
 
-    public void create(String name, String email, String password) {
+    public void create(String name, String email, String password, final APIListener<PersonModel> listener) {
         Call<PersonModel> call = this.mPersonService.create(name, email, password, true);
         call.enqueue(new Callback<PersonModel>() {
             @Override
             public void onResponse(Call<PersonModel> call, Response<PersonModel> response) {
-                PersonModel p = response.body();
-                int code = response.code();
-                String s = "";
+                if (response.code() == TaskConstants.HTTP.SUCCESS){
+                    listener.onSuccess(response.body());
+                } else {
+                    listener.onFailure(handleFailure(response.errorBody()));
+                }
             }
 
             @Override
             public void onFailure(Call<PersonModel> call, Throwable t) {
-                String s = "";
+                listener.onFailure(mContext.getString(R.string.ERROR_UNEXPECTED));
             }
         });
     }
@@ -54,13 +53,7 @@ public class PersonRepository {
                 if (response.code() == TaskConstants.HTTP.SUCCESS) {
                     listener.onSuccess(response.body());
                 } else {
-                    try {
-                        String json = response.errorBody().string();
-                        String str = new Gson().fromJson(json, String.class);
-                        listener.onFailure(str);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    listener.onFailure(handleFailure(response.errorBody()));
                 }
             }
 

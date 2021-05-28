@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onChanged(Feedback feedback) {
                 if (feedback.isSuccess()) {
-                    Toast.makeText(getApplicationContext(), "Sucesso", Toast.LENGTH_SHORT).show();
+                    startMain();
                 } else {
                     Toast.makeText(getApplicationContext(), feedback.getMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -73,9 +73,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onChanged(Boolean logged) {
                 if (logged) {
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    startMain();
                 }
             }
         });
@@ -85,6 +83,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         this.mLoginViewModel.verifyUserLogged();
     }
 
+    private void startMain(){
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
     /**
      * ViewHolder
