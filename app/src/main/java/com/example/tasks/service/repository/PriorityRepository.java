@@ -44,9 +44,13 @@ public class PriorityRepository extends BaseRepository{
 
             @Override
             public void onFailure(Call<List<PriorityModel>> call, Throwable t) {
-
+                listener.onFailure(mContext.getString(R.string.ERROR_UNEXPECTED));
             }
         });
+    }
+
+    public List<PriorityModel> getList(){
+        return this.mPriorityDAO.list();
     }
 
     public void save(List<PriorityModel> list){
