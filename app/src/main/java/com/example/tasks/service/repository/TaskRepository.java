@@ -9,6 +9,8 @@ import com.example.tasks.service.model.TaskModel;
 import com.example.tasks.service.repository.remote.RetrofitClient;
 import com.example.tasks.service.repository.remote.TaskService;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,5 +46,39 @@ public class TaskRepository extends BaseRepository {
                 listener.onFailure(mContext.getString(R.string.ERROR_UNEXPECTED));
             }
         });
+    }
+
+    private void list(Call<List<TaskModel>> call, final APIListener<List<TaskModel>> listener) {
+        call.enqueue(new Callback<List<TaskModel>>() {
+            @Override
+            public void onResponse(Call<List<TaskModel>> call, Response<List<TaskModel>> response) {
+                if (response.code() == TaskConstants.HTTP.SUCCESS) {
+                    listener.onSuccess(response.body());
+                } else {
+                    listener.onFailure(handleFailure(response.errorBody()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<TaskModel>> call, Throwable t) {
+                listener.onFailure(mContext.getString(R.string.ERROR_UNEXPECTED));
+            }
+        });
+    }
+
+
+    public void all(final APIListener<List<TaskModel>> listener) {
+        Call<List<TaskModel>> call = this.mTaskService.all();
+        this.list(call, listener);
+    }
+
+    public void nextWeek(final APIListener<List<TaskModel>> listener) {
+        Call<List<TaskModel>> call = this.mTaskService.nextWeek();
+        this.list(call, listener);
+    }
+
+    public void overdue(final APIListener<List<TaskModel>> listener) {
+        Call<List<TaskModel>> call = this.mTaskService.overdue();
+        this.list(call, listener);
     }
 }

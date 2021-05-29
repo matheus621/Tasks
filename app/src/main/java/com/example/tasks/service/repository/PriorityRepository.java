@@ -57,4 +57,8 @@ public class PriorityRepository extends BaseRepository{
         this.mPriorityDAO.clear();
         this.mPriorityDAO.save(list);
     }
+
+    public String getDescription(int id){
+        return  this.mPriorityDAO.getDescription(id);
+    }
 }

@@ -54,6 +54,9 @@ public class LoginViewModel extends AndroidViewModel {
         PersonModel model = this.mPersonRepository.getUserData();
         boolean logged = !"".equals(model.getName());
 
+        //Adiciona os heards
+        this.mPersonRepository.saveUserData(model);
+
         //Usuario não logado
         if (!logged){
             this.mPriorityRepository.all(new APIListener<List<PriorityModel>>() {
