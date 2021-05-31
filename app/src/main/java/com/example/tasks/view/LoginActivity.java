@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tasks.R;
@@ -31,6 +32,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         this.mViewHolder.edtEmail = findViewById(R.id.edt_email);
         this.mViewHolder.edtPassword = findViewById(R.id.edt_password);
         this.mViewHolder.btnLogin = findViewById(R.id.button_login);
+        this.mViewHolder.textRegister = findViewById(R.id.text_register);
 
         this.setListerners();
 
@@ -50,11 +52,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             this.mLoginViewModel.login(email, password);
 
+        } else if (id == R.id.text_register){
+            startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
         }
     }
 
     private void setListerners() {
         this.mViewHolder.btnLogin.setOnClickListener(this);
+        this.mViewHolder.textRegister.setOnClickListener(this);
     }
 
     private void loadObservers() {
@@ -97,6 +102,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         EditText edtEmail;
         EditText edtPassword;
         Button btnLogin;
+        TextView textRegister;
     }
 
 }

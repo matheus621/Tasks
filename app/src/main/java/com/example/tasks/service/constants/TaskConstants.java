@@ -12,6 +12,7 @@ public class TaskConstants {
         public static final String TOKEN_KEY = "token";
         public static final String PERSON_KEY = "personkey";
         public static final String PERSON_NAME = "personname";
+        public static final String PERSON_EMAIL = "personemail";
     }
 
     public static class HTTP {

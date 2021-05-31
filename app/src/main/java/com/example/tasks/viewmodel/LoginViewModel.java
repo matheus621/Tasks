@@ -33,11 +33,12 @@ public class LoginViewModel extends AndroidViewModel {
         this.mPriorityRepository = new PriorityRepository(application);
     }
 
-    public void login(String email, String password) {
+    public void login(final String email, String password) {
         this.mPersonRepository.login(email, password, new APIListener<PersonModel>() {
             @Override
             public void onSuccess(PersonModel result) {
 
+                result.setEmail(email);
                 mPersonRepository.saveUserData(result);
 
                 mLogin.setValue(new Feedback());

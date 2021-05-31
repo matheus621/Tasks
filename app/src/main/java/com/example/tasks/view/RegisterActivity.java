@@ -1,11 +1,13 @@
 package com.example.tasks.view;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -62,7 +64,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.button_create){
+        if (id == R.id.button_create) {
 
             String name = this.mViewHolder.edtName.getText().toString();
             String email = this.mViewHolder.edtEmail.getText().toString();
@@ -71,6 +73,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             this.mRegisterViewModel.create(name, email, password);
 
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
