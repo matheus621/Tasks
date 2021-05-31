@@ -31,6 +31,12 @@ public class PriorityRepository extends BaseRepository{
     }
 
     public void all(final APIListener<List<PriorityModel>> listener){
+
+        if (!super.isConnectionAvailable()){
+            listener.onFailure(mContext.getString(R.string.ERROR_INTERNET_CONNECTION));
+            return;
+        }
+
         Call<List<PriorityModel>> call = this.mPriorityService.all();
         call.enqueue(new Callback<List<PriorityModel>>() {
             @Override

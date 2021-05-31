@@ -25,6 +25,12 @@ public class TaskRepository extends BaseRepository {
     }
 
     private void persist(Call<Boolean> call, final APIListener<Boolean> listener) {
+
+        if (!super.isConnectionAvailable()){
+            listener.onFailure(mContext.getString(R.string.ERROR_INTERNET_CONNECTION));
+            return;
+        }
+
         call.enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
@@ -64,6 +70,12 @@ public class TaskRepository extends BaseRepository {
     }
 
     private void list(Call<List<TaskModel>> call, final APIListener<List<TaskModel>> listener) {
+
+        if (!super.isConnectionAvailable()) {
+            listener.onFailure(mContext.getString(R.string.ERROR_INTERNET_CONNECTION));
+            return;
+        }
+
         call.enqueue(new Callback<List<TaskModel>>() {
             @Override
             public void onResponse(Call<List<TaskModel>> call, Response<List<TaskModel>> response) {
@@ -86,12 +98,13 @@ public class TaskRepository extends BaseRepository {
         this.persist(call, listener);
     }
 
-    public void complete(int id, final APIListener<Boolean> listener){
+    public void complete(int id, final APIListener<Boolean> listener) {
         Call<Boolean> call = this.mTaskService.complete(id);
         this.persist(call, listener);
     }
 
-    public void undo(int id, final APIListener<Boolean> listener){
+    public void undo(int id, final APIListener<Boolean> listener) {
+
         Call<Boolean> call = this.mTaskService.undo(id);
         this.persist(call, listener);
     }
@@ -112,6 +125,11 @@ public class TaskRepository extends BaseRepository {
     }
 
     public void load(int id, final APIListener<TaskModel> listener) {
+        if (!super.isConnectionAvailable()) {
+            listener.onFailure(mContext.getString(R.string.ERROR_INTERNET_CONNECTION));
+            return;
+        }
+
         Call<TaskModel> call = this.mTaskService.load(id);
         call.enqueue(new Callback<TaskModel>() {
             @Override
