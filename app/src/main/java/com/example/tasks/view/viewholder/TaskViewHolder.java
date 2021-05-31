@@ -39,7 +39,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
     /**
      * Atribui valores aos elementos de interface e também eventos
      */
-    public void bindData(TaskModel taskModel) {
+    public void bindData(final TaskModel taskModel) {
 
         this.mTextDescription.setText(taskModel.getDescription());
 
@@ -53,24 +53,35 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         String priority = this.mPriorityRepository.getDescription(taskModel.getPriorityId());
         this.mTextPriority.setText(priority);
 
-        if (taskModel.getComplete()){
+        if (taskModel.getComplete()) {
             this.mImageComplete.setImageResource(R.drawable.ic_done);
         } else {
             this.mImageComplete.setImageResource(R.drawable.ic_todo);
         }
 
+        this.mTextDescription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onListClick(taskModel.getId());
+            }
+        });
 
-        /*
-        new AlertDialog.Builder(itemView.getContext())
-                .setTitle(R.string.remocao_de_tarefa)
-                .setMessage(R.string.remover_tarefa)
-                .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // mListener.onDeleteClick(task.id);
-                    }
-                })
-                .setNeutralButton(R.string.cancelar, null).show();*/
+        this.mTextDescription.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                new AlertDialog.Builder(itemView.getContext())
+                        .setTitle(R.string.remocao_de_tarefa)
+                        .setMessage(R.string.remover_tarefa)
+                        .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                 mListener.onDeleteClick(taskModel.getId());
+                            }
+                        })
+                        .setNeutralButton(R.string.cancelar, null).show();
+                return false;
+            }
+        });
 
 
     }

@@ -1,5 +1,6 @@
 package com.example.tasks.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tasks.R;
+import com.example.tasks.service.constants.TaskConstants;
 import com.example.tasks.service.listener.Feedback;
 import com.example.tasks.service.listener.TaskListener;
 import com.example.tasks.service.model.TaskModel;
@@ -27,6 +29,7 @@ public class TaskListFragment extends Fragment {
     private TaskAdapter mAdapter = new TaskAdapter();
     private TaskListViewModel mViewModel;
     private TaskListener mListener;
+    private int mFilter = 0;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_task_list, container, false);
@@ -40,10 +43,18 @@ public class TaskListFragment extends Fragment {
         this.mListener = new TaskListener() {
             @Override
             public void onListClick(int id) {
+                Intent intent = new Intent(getContext(), TaskActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt(TaskConstants.BUNDLE.TASKID, id);
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
 
             @Override
             public void onDeleteClick(int id) {
+
+                mViewModel.delete(id);
+
             }
 
             @Override
@@ -55,8 +66,15 @@ public class TaskListFragment extends Fragment {
             }
         };
 
+        this.mAdapter.attachListener(this.mListener);
+
         // Cria os observadores
         this.loadObservers();
+
+        Bundle bundle = getArguments();
+        if (bundle != null){
+            this.mFilter = bundle.getInt(TaskConstants.TASKFILTER.KEY);
+        }
 
         return root;
     }
@@ -64,7 +82,7 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        this.mViewModel.list();
+        this.mViewModel.list(this.mFilter);
 
     }
 
@@ -81,6 +99,9 @@ public class TaskListFragment extends Fragment {
             public void onChanged(Feedback feedback) {
                 if (!feedback.isSuccess()){
                     toast(feedback.getMessage());
+                } else {
+                    toast(getString(R.string.task_removed));
+                    mViewModel.list(mFilter);
                 }
             }
         });

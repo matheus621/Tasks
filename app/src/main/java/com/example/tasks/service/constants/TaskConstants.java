@@ -19,10 +19,12 @@ public class TaskConstants {
         public static final int NOT_FOUND = 404;
     }
 
-    public static class FILTER {
+    public static class TASKFILTER {
+        public static final String KEY = "TASKFILTER";
         public static final int NO_FILTER = 0;
-        public static final int OVERDUE = 1;
-        public static final int NEXT_7_DAYS = 2;
+        public static final int NEXT_7_DAYS = 1;
+        public static final int OVERDUE = 2;
+
     }
 
     public static class BUNDLE {

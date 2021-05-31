@@ -24,8 +24,11 @@ public class TaskViewModel extends AndroidViewModel {
     private MutableLiveData<List<PriorityModel>> mListPriority = new MutableLiveData<>();
     public LiveData<List<PriorityModel>> listPriority = this.mListPriority;
 
-    private MutableLiveData<Feedback> mTaskSave = new MutableLiveData<>();
-    public LiveData<Feedback> taskSave = this.mTaskSave;
+    private MutableLiveData<TaskModel> mTaskLoad = new MutableLiveData<>();
+    public LiveData<TaskModel> task = this.mTaskLoad;
+
+    private MutableLiveData<Feedback> mFeedback = new MutableLiveData<>();
+    public LiveData<Feedback> feedback = this.mFeedback;
 
     public TaskViewModel(@NonNull Application application) {
         super(application);
@@ -34,21 +37,42 @@ public class TaskViewModel extends AndroidViewModel {
         this.mTaskRepository = new TaskRepository(application);
     }
 
-    public void getList(){
+    public void getList() {
         List<PriorityModel> lst = this.mPriorityRepository.getList();
         this.mListPriority.setValue(lst);
     }
 
-    public void save(TaskModel task){
-        this.mTaskRepository.save(task, new APIListener<Boolean>() {
+    public void save(TaskModel task) {
+
+        APIListener<Boolean> listener = new APIListener<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                mTaskSave.setValue(new Feedback());
+                mFeedback.setValue(new Feedback());
             }
 
             @Override
             public void onFailure(String message) {
-                mTaskSave.setValue(new Feedback(message));
+                mFeedback.setValue(new Feedback(message));
+            }
+        };
+
+        if (task.getId() == 0) {
+            this.mTaskRepository.create(task, listener);
+        } else {
+            this.mTaskRepository.update(task, listener);
+        }
+    }
+
+    public void load(int id) {
+        this.mTaskRepository.load(id, new APIListener<TaskModel>() {
+            @Override
+            public void onSuccess(TaskModel result) {
+                mTaskLoad.setValue(result);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                mFeedback.setValue(new Feedback(message));
             }
         });
     }

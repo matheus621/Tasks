@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.tasks.service.constants.TaskConstants;
 import com.example.tasks.service.listener.APIListener;
 import com.example.tasks.service.listener.Feedback;
 import com.example.tasks.service.model.TaskModel;
@@ -31,8 +32,8 @@ public class TaskListViewModel extends AndroidViewModel {
         this.mTaskRepository = new TaskRepository(application);
     }
 
-    public void list() {
-        this.mTaskRepository.all(new APIListener<List<TaskModel>>() {
+    public void list(int filter) {
+        APIListener<List<TaskModel>> listener = new APIListener<List<TaskModel>>() {
             @Override
             public void onSuccess(List<TaskModel> result) {
                 mList.setValue(result);
@@ -41,6 +42,31 @@ public class TaskListViewModel extends AndroidViewModel {
             @Override
             public void onFailure(String message) {
                 mList.setValue(new ArrayList<TaskModel>());
+                mFeedback.setValue(new Feedback(message));
+            }
+        };
+
+        if (filter == TaskConstants.TASKFILTER.NO_FILTER){
+            this.mTaskRepository.all(listener);
+        } else  if (filter == TaskConstants.TASKFILTER.NEXT_7_DAYS){
+            this.mTaskRepository.nextWeek(listener);
+        } else {
+            this.mTaskRepository.overdue(listener);
+        }
+
+    }
+
+    public void delete(int id){
+        this.mTaskRepository.delete(id, new APIListener<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result){
+                    mFeedback.setValue(new Feedback());
+                }
+            }
+
+            @Override
+            public void onFailure(String message) {
                 mFeedback.setValue(new Feedback(message));
             }
         });

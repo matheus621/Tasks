@@ -15,16 +15,20 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.tasks.R;
+import com.example.tasks.service.constants.TaskConstants;
 import com.example.tasks.service.listener.Feedback;
 import com.example.tasks.service.model.PriorityModel;
 import com.example.tasks.service.model.TaskModel;
 import com.example.tasks.viewmodel.TaskViewModel;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,6 +38,7 @@ public class TaskActivity extends AppCompatActivity implements View.OnClickListe
     private ViewHolder mViewHolder = new ViewHolder();
     private List<Integer> mListPriority = new ArrayList<>();
     private TaskViewModel mViewModel;
+    private int mTaskId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +65,7 @@ public class TaskActivity extends AppCompatActivity implements View.OnClickListe
         this.loadObservers();
         this.mViewModel.getList();
 
+        this.loadDataFromActivity();
     }
 
     @Override
@@ -104,9 +110,19 @@ public class TaskActivity extends AppCompatActivity implements View.OnClickListe
         new DatePickerDialog(this, this, year, month, day).show();
     }
 
-    private void handleSave(){
+    private void loadDataFromActivity() {
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            this.mTaskId = bundle.getInt(TaskConstants.BUNDLE.TASKID);
+            mViewHolder.buttonSave.setText(this.getString(R.string.update_task));
+            this.mViewModel.load(this.mTaskId);
+        }
+    }
+
+    private void handleSave() {
         TaskModel task = new TaskModel();
 
+        task.setId(this.mTaskId);
         task.setDescription(this.mViewHolder.edtDescription.getText().toString());
         task.setComplete(this.mViewHolder.checkComplete.isChecked());
         task.setDueDate(this.mViewHolder.buttonDate.getText().toString());
@@ -126,19 +142,59 @@ public class TaskActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        this.mViewModel.taskSave.observe(this, new Observer<Feedback>() {
+        this.mViewModel.task.observe(this, new Observer<TaskModel>() {
+            @Override
+            public void onChanged(TaskModel taskModel) {
+                mViewHolder.edtDescription.setText(taskModel.getDescription());
+                mViewHolder.checkComplete.setChecked(taskModel.getComplete());
+                mViewHolder.spinnerPriority.setSelection(getIndex(taskModel.getPriorityId()));
+
+                try {
+                    Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(taskModel.getDueDate());
+                    mViewHolder.buttonDate.setText(mFormat.format(date));
+                } catch (ParseException e) {
+                    mViewHolder.buttonDate.setText("--");
+                }
+            }
+        });
+
+        this.mViewModel.feedback.observe(this, new Observer<Feedback>() {
             @Override
             public void onChanged(Feedback feedback) {
-
+                if (feedback.isSuccess()) {
+                    if (mTaskId == 0){
+                        toast(getApplicationContext().getString(R.string.task_created));
+                    } else {
+                        toast(getApplicationContext().getString(R.string.task_updated));
+                    }
+                    finish();
+                } else {
+                    toast(feedback.getMessage());
+                }
             }
         });
     }
 
-    private void loadSpinner(List<PriorityModel> list){
+    private void toast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private int getIndex(int priorityId) {
+        int index = 0;
+        for (int i = 0; i < this.mListPriority.size(); i++) {
+            if (this.mListPriority.get(i) == priorityId) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+
+    private void loadSpinner(List<PriorityModel> list) {
 
         List<String> lstPriorities = new ArrayList<>();
 
-        for (PriorityModel p : list){
+        for (PriorityModel p : list) {
             lstPriorities.add(p.getDescription());
             this.mListPriority.add(p.getId());
         }
@@ -158,4 +214,6 @@ public class TaskActivity extends AppCompatActivity implements View.OnClickListe
         Button buttonDate;
         Button buttonSave;
     }
+
+
 }
