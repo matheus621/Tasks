@@ -20,6 +20,7 @@ import java.util.List;
 public class TaskListViewModel extends AndroidViewModel {
 
     private TaskRepository mTaskRepository;
+    private int mFilter = 0;
 
     private MutableLiveData<List<TaskModel>> mList = new MutableLiveData<>();
     public LiveData<List<TaskModel>> list = this.mList;
@@ -33,6 +34,7 @@ public class TaskListViewModel extends AndroidViewModel {
     }
 
     public void list(int filter) {
+        this.mFilter = filter;
         APIListener<List<TaskModel>> listener = new APIListener<List<TaskModel>>() {
             @Override
             public void onSuccess(List<TaskModel> result) {
@@ -46,9 +48,9 @@ public class TaskListViewModel extends AndroidViewModel {
             }
         };
 
-        if (filter == TaskConstants.TASKFILTER.NO_FILTER){
+        if (filter == TaskConstants.TASKFILTER.NO_FILTER) {
             this.mTaskRepository.all(listener);
-        } else  if (filter == TaskConstants.TASKFILTER.NEXT_7_DAYS){
+        } else if (filter == TaskConstants.TASKFILTER.NEXT_7_DAYS) {
             this.mTaskRepository.nextWeek(listener);
         } else {
             this.mTaskRepository.overdue(listener);
@@ -56,13 +58,32 @@ public class TaskListViewModel extends AndroidViewModel {
 
     }
 
-    public void delete(int id){
+    public void updateStatus(int id, boolean complete) {
+        APIListener<Boolean> listener = new APIListener<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                list(mFilter);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                mFeedback.setValue(new Feedback(message));
+            }
+        };
+
+        if (complete) {
+            mTaskRepository.complete(id, listener);
+        } else {
+            mTaskRepository.undo(id, listener);
+        }
+    }
+
+    public void delete(int id) {
         this.mTaskRepository.delete(id, new APIListener<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                if (result){
-                    mFeedback.setValue(new Feedback());
-                }
+               list(mFilter);
+                mFeedback.setValue(new Feedback());
             }
 
             @Override

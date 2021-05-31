@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tasks.R;
 import com.example.tasks.service.constants.TaskConstants;
+import com.example.tasks.service.listener.APIListener;
 import com.example.tasks.service.listener.Feedback;
 import com.example.tasks.service.listener.TaskListener;
 import com.example.tasks.service.model.TaskModel;
@@ -52,17 +53,17 @@ public class TaskListFragment extends Fragment {
 
             @Override
             public void onDeleteClick(int id) {
-
                 mViewModel.delete(id);
-
             }
 
             @Override
             public void onCompleteClick(int id) {
+                mViewModel.updateStatus(id, true);
             }
 
             @Override
             public void onUndoClick(int id) {
+                mViewModel.updateStatus(id, false);
             }
         };
 
@@ -101,7 +102,6 @@ public class TaskListFragment extends Fragment {
                     toast(feedback.getMessage());
                 } else {
                     toast(getString(R.string.task_removed));
-                    mViewModel.list(mFilter);
                 }
             }
         });
