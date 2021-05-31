@@ -83,6 +83,12 @@ public class PersonRepository extends BaseRepository {
         RetrofitClient.saveHeaders(model.getToken(), model.getPersonKey());
     }
 
+    public void clearUserData(){
+        this.mSecurityPreferences.remove(TaskConstants.SHARED.TOKEN_KEY);
+        this.mSecurityPreferences.remove(TaskConstants.SHARED.PERSON_KEY);
+        this.mSecurityPreferences.remove(TaskConstants.SHARED.PERSON_NAME);
+    }
+
     public PersonModel getUserData() {
         PersonModel model = new PersonModel();
         model.setName(this.mSecurityPreferences.getStoreString(TaskConstants.SHARED.PERSON_NAME));
